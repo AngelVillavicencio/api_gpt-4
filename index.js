@@ -52,7 +52,7 @@ app.post('/api/process', async (req, res) => {
         res.send({ email, imageUrl, visionResult: response.data.choices[0].message.content });
     } catch (error) {
         console.error('Error al llamar a la API de OpenAI:', error);
-        res.status(500).json({ error: 'Error al procesar la solicitud.' });
+        res.status(500).json({ error: error });
     }
 });
 
@@ -62,12 +62,15 @@ app.post('/api/prompt', async (req, res) => {
 
     const { email, imageUrl, prompt } = req.body;
 
+    let prompt_ = prompt
+
     if (!email || !imageUrl) {
         return res.status(400).json({ error: 'Debe proporcionar el correo electrónico y la URL de la imagen.' });
     }
+    console.log('paso la validacion de email y imagurl ', imageUrl);
 
-    if (!prompt) {
-        return "Describe a detalle que es lo que ves en la foto.";
+    if (!prompt_) {
+        prompt_ = "Describe a detalle que es lo que ves en la foto.";
     }
 
     try {
@@ -77,7 +80,7 @@ app.post('/api/prompt', async (req, res) => {
                 {
                     role: "user",
                     content: [
-                        { type: "text", text: prompt },
+                        { type: "text", text: prompt_ },
                         {
                             type: "image_url",
                             image_url: {
